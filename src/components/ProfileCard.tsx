@@ -5,7 +5,7 @@ import { useInfluencerStore } from "@/store/useInfluencerStore";
 import { formatFollowers } from "@/utils/formatters";
 import { Plus, Check } from "lucide-react";
 import { InstagramIcon, YoutubeIcon, TikTokIcon } from "./BrandIcons";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 
 interface ProfileCardProps {
   profile: UserProfileSummary;
@@ -21,6 +21,7 @@ export function ProfileCard({
   onProfileClick,
 }: ProfileCardProps) {
   const navigate = useNavigate();
+  const [imgError, setImgError] = useState(false);
 
   // Zustand Store
   const selectedInfluencers = useInfluencerStore((state) => state.selectedInfluencers);
@@ -80,11 +81,18 @@ export function ProfileCard({
     >
       {/* Avatar Container with Hover Scale */}
       <div className="relative flex-shrink-0">
-        <img
-          src={profile.picture}
-          alt={profile.fullname}
-          className="w-14 h-14 rounded-full border border-slate-200 dark:border-slate-800 object-cover shadow-sm group-hover:scale-105 transition-transform duration-300"
-        />
+        {imgError ? (
+          <div className="w-14 h-14 rounded-full flex items-center justify-center font-bold text-white text-base bg-gradient-to-tr from-indigo-500 to-violet-600 shadow-sm border border-slate-250 dark:border-slate-805/80 group-hover:scale-105 transition-transform duration-300">
+            {profile.fullname ? profile.fullname.charAt(0).toUpperCase() : "@"}
+          </div>
+        ) : (
+          <img
+            src={profile.picture}
+            alt={profile.fullname}
+            onError={() => setImgError(true)}
+            className="w-14 h-14 rounded-full border border-slate-200 dark:border-slate-800 object-cover shadow-sm group-hover:scale-105 transition-transform duration-300"
+          />
+        )}
         <div className={`absolute -bottom-1 -right-1 flex items-center justify-center w-6 h-6 rounded-full border border-white dark:border-slate-950 shadow-sm ${currentPlatform.color}`}>
           {currentPlatform.icon}
         </div>

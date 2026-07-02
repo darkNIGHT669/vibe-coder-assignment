@@ -1,8 +1,27 @@
 import { useInfluencerStore } from "@/store/useInfluencerStore";
 import { formatFollowers } from "@/utils/formatters";
 import { X, Trash2, UserMinus, FileSpreadsheet, FileJson, Users, Sparkles, ExternalLink } from "lucide-react";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+
+function SidebarAvatar({ picture, fullname }: { picture: string; fullname: string }) {
+  const [imgError, setImgError] = useState(false);
+  if (imgError) {
+    return (
+      <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-white text-xs bg-gradient-to-tr from-indigo-500 to-violet-600 border border-slate-200/50 dark:border-slate-800/50 flex-shrink-0">
+        {fullname ? fullname.charAt(0).toUpperCase() : "@"}
+      </div>
+    );
+  }
+  return (
+    <img
+      src={picture}
+      alt={fullname}
+      onError={() => setImgError(true)}
+      className="w-10 h-10 rounded-full object-cover border border-slate-200/50 dark:border-slate-800/50 flex-shrink-0"
+    />
+  );
+}
 
 export function SelectedListSidebar() {
   const selectedInfluencers = useInfluencerStore((state) => state.selectedInfluencers);
@@ -119,11 +138,7 @@ export function SelectedListSidebar() {
                 key={item.user_id}
                 className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-900/60 border border-slate-200/40 dark:border-slate-800/40 rounded-xl hover:border-slate-300 dark:hover:border-slate-700 transition-colors group"
               >
-                <img
-                  src={item.picture}
-                  alt={item.fullname}
-                  className="w-10 h-10 rounded-full object-cover border border-slate-200/50 dark:border-slate-800/50"
-                />
+                <SidebarAvatar picture={item.picture} fullname={item.fullname} />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-1">
                     <Link

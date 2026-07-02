@@ -37,6 +37,7 @@ export function ProfileDetailPage() {
   
   const [profileData, setProfileData] = useState<ProfileDetailResponse | null>(null);
   const [loaded, setLoaded] = useState(false);
+  const [imgError, setImgError] = useState(false);
 
   // Zustand Store hooks
   const selectedInfluencers = useInfluencerStore((state) => state.selectedInfluencers);
@@ -188,11 +189,18 @@ export function ProfileDetailPage() {
           <div className="px-6 pb-6 pt-0 relative flex flex-col sm:flex-row sm:items-start gap-6">
             {/* Large Avatar container */}
             <div className="-mt-16 relative flex-shrink-0 mx-auto sm:mx-0">
-              <img
-                src={user.picture}
-                alt={user.fullname}
-                className="w-28 h-28 rounded-full border-4 border-white dark:border-slate-950 object-cover shadow-md"
-              />
+              {imgError ? (
+                <div className="w-28 h-28 rounded-full flex items-center justify-center font-bold text-white text-3xl bg-gradient-to-tr from-indigo-500 to-violet-600 shadow-md border-4 border-white dark:border-slate-950">
+                  {user.fullname ? user.fullname.charAt(0).toUpperCase() : "@"}
+                </div>
+              ) : (
+                <img
+                  src={user.picture}
+                  alt={user.fullname}
+                  onError={() => setImgError(true)}
+                  className="w-28 h-28 rounded-full border-4 border-white dark:border-slate-950 object-cover shadow-md"
+                />
+              )}
               <div className={`absolute bottom-0 right-0 flex items-center justify-center w-8 h-8 rounded-full border-2 border-white dark:border-slate-950 shadow-sm ${currentPlatform.color}`}>
                 {currentPlatform.icon}
               </div>
