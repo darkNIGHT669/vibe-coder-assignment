@@ -78,3 +78,29 @@ Complete the following as part of your submission:
 - **Bonus:** Deploying the app (e.g. Vercel, Netlify, GitHub Pages) is optional but will be considered a plus — include the live URL in your submission if you do
 
 Good luck!
+
+## Refactoring Notes, Assumptions, and Trade-offs
+
+We have refactored and completed the assignment with the following architectural choices:
+
+### 1. Bug Fixes & Data Normalization
+- **Runtime Crash Fixed**: Discovered that multiple accounts in the search results (e.g., `VladandNiki` and `KidsDianaShow` in `youtube.json`) were missing the `username` property, which caused the filter method to crash with a `TypeError`. We normalized this at the data extraction boundary (`src/utils/dataHelpers.ts`) by falling back to `handle` or `custom_name`.
+- **Engagement Rate Calculation**: Fixed the engagement rate display math which was incorrectly multiplying by `10,000` (showing ratios like `142.50%` instead of `1.43%`). It is now formatted cleanly using `(rate * 100)`.
+- **Metric Mapping**: Corrected the "Engagements" label in the profile details page to render the formatted count of raw engagements (e.g. `1.32M`) rather than duplicate the engagement rate percentage.
+- **Search Case Sensitivity**: Modified the search logic to perform case-insensitive username searches.
+
+### 2. State Management (Zustand & Persistent Queue)
+- Created a global Zustand store in `src/store/useInfluencerStore.ts` with TypeScript interfaces.
+- Stored shortlists in `localStorage` using Zustand's `persist` middleware.
+- **Hydration Boundary Safeguard**: Implemented a `hasHydrated` state in our Zustand store to handle edge cases where client-side hydration differs from initial page renders, preventing flashing of stale list states or layout shifts.
+- **Separation of Concerns**: Excluded layout configurations (like `sidebarOpen` and `hasHydrated`) from persistence to prevent restoring stale drawer UI states.
+
+### 3. UI/UX Redesign
+- Built a modern, sleek dashboard with campaign summary stats ( shortlisting count, total combined reach, average engagement rate).
+- Made the interface fully responsive by removing fixed card widths (`w-[700px]`) and using a fluid, grid-based layout.
+- Added a floating shortlist badge and sliding campaign sidebar list drawer to manage additions, removals, clear lists, and export functions.
+- **Self-contained Brand SVGs**: Since newer versions of `lucide-react` do not package brand icons, we created a modular `BrandIcons.tsx` component with clean inline SVGs for Instagram, YouTube, and TikTok to ensure the application remains dependency-free and renders brand logos properly.
+
+### 4. Build & Export Capabilities
+- Shortlisted lists can be exported directly as **CSV** or **JSON** formats.
+- Verified that `npm run build` and `npm run lint` pass with 100% clean compilation warnings.
